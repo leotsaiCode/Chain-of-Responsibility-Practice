@@ -72,9 +72,9 @@ public abstract class PaymentHandlerBase : IPaymentHandler
     protected abstract Task<PaymentResult> ProcessAsync(PaymentRequest request);
 }
 
-public class MemberExistsHandler : PaymentHandlerBase
+public sealed class MemberExistsHandler : PaymentHandlerBase
 {
-    protected override Task<PaymentResult> ProcessAsync(PaymentRequest request)
+    protected sealed override Task<PaymentResult> ProcessAsync(PaymentRequest request)
     {
 
         if (string.IsNullOrWhiteSpace(request.MemberId))
@@ -85,9 +85,9 @@ public class MemberExistsHandler : PaymentHandlerBase
     }
 }
 
-public class AmountValidHandler : PaymentHandlerBase
+public sealed class AmountValidHandler : PaymentHandlerBase
 {
-    protected override Task<PaymentResult> ProcessAsync(PaymentRequest request)
+    protected sealed override Task<PaymentResult> ProcessAsync(PaymentRequest request)
     {
         if (request.Amount <= 0)
             return Task.FromResult(PaymentResult.Fail("付款金額必須大於 0"));
