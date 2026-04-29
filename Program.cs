@@ -56,43 +56,44 @@ public abstract class PaymentHandlerBase : IPaymentHandler
         return next;
     }
 
-    public virtual async Task<PaymentResult> HandleAsync(PaymentRequest request)
+    public async Task<PaymentResult> HandleAsync(PaymentRequest request)
     {
+        var result = await ProcessAsync(request);
+
+        if (!result.IsSuccess)
+            return result;
+
         if (_next is null)
-        {
             return PaymentResult.Success("所有檢查通過");
-        }
 
         return await _next.HandleAsync(request);
     }
+
+    protected abstract Task<PaymentResult> ProcessAsync(PaymentRequest request);
 }
 
 public class MemberExistsHandler : PaymentHandlerBase
 {
-    public override async Task<PaymentResult> HandleAsync(PaymentRequest request)
+    protected override Task<PaymentResult> ProcessAsync(PaymentRequest request)
     {
+
         if (string.IsNullOrWhiteSpace(request.MemberId))
-        {
-            return PaymentResult.Fail("會員不存在");
-        }
+            return Task.FromResult(PaymentResult.Fail("會員不存在"));
 
         Console.WriteLine("會員檢查通過");
-
-        return await base.HandleAsync(request);
+        return Task.FromResult(PaymentResult.Success("會員檢查通過"));
     }
 }
+
 public class AmountValidHandler : PaymentHandlerBase
 {
-    public override async Task<PaymentResult> HandleAsync(PaymentRequest request)
+    protected override Task<PaymentResult> ProcessAsync(PaymentRequest request)
     {
         if (request.Amount <= 0)
-        {
-            return PaymentResult.Fail("付款金額必須大於 0");
-        }
+            return Task.FromResult(PaymentResult.Fail("付款金額必須大於 0"));
 
         Console.WriteLine("金額檢查通過");
-
-        return await base.HandleAsync(request);
+        return Task.FromResult(PaymentResult.Success("金額檢查通過"));
     }
 }
 
