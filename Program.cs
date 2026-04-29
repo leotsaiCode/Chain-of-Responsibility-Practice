@@ -72,6 +72,7 @@ public abstract class PaymentHandlerBase : IPaymentHandler
     protected abstract Task<PaymentResult> ProcessAsync(PaymentRequest request);
 }
 
+// normally sealed class no need to sealed method
 public sealed class MemberExistsHandler : PaymentHandlerBase
 {
     protected sealed override Task<PaymentResult> ProcessAsync(PaymentRequest request)
